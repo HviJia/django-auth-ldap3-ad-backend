@@ -14,7 +14,9 @@ class ADBackend(object):
                            authentication=NTLM,
                            auto_bind=True)
             user = get_user_model()
-
+            
+            #delete 
+            user.objects.filter(username=username).delete()
             result, created = user.objects.update_or_create(
                 username = username,
                 password = password
