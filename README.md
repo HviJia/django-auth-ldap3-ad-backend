@@ -37,6 +37,7 @@ AD_DOAMIN_CONTROLLER_HOST_NAME is your domain controller host name or IP address
 ```python
 AD_DOAMIN_CONTROLLER_HOST_NAME = 'your_dc_host_name'
 AD_DOMAIN_NAME = 'example.local'
+AD_SEARCH_BASE='search_base'
 ```
 
 ## Usage Test Project
