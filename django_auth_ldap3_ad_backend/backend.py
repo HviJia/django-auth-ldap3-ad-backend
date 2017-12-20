@@ -15,10 +15,16 @@ class ADBackend(object):
                            auto_bind=True)
             user = get_user_model()
             
+            try:
+                c.search(settings.AD_SEARCH_BASE, '(&(objectclass=person)(sAMAccountName='+username+'))', attributes=['CN'])
+                first_name=c.entries[0].cn.value
+            except:
+                first_name=''
             #delete 
-            user.objects.filter(username=username).delete()
+            #user.objects.filter(username=username).delete()
             result, created = user.objects.update_or_create(
                 username = username,
+                first_name=first_name,
                 password = password
             )
             c.unbind()
