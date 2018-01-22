@@ -18,10 +18,13 @@ class ADBackend(object):
             try:
                 c.search(settings.AD_SEARCH_BASE, '(&(objectclass=person)(sAMAccountName='+username+'))', attributes=['CN','title'])
                 first_name=c.entries[0].cn.value
-                user_position=c.entries[0].title.value
-                user1=user.objects.get(username=username)
-                user1.profile.user_position=user_position
-                user1.save()
+                try:
+                    user_position=c.entries[0].title.value
+                    user1=user.objects.get(username=username)
+                    user1.profile.user_position=user_position
+                    user1.save()
+                except:
+                    pass
             except:
                 pass
             result, created = user.objects.update_or_create(
@@ -30,7 +33,6 @@ class ADBackend(object):
                 password = password
             )
             
-            print(user1.profile.user_position+'----<')
             c.unbind()
             return result
 
