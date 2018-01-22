@@ -5,7 +5,8 @@ from ldap3 import Server, Connection, NTLM
 class ADBackend(object):
     def authenticate(self, username=None, password=None):
         server = Server(settings.AD_DOAMIN_CONTROLLER_HOST_NAME)
-
+        first_name=''
+        user_position=''
         try:
             # auto_bindありのConnectionの生成で例外が発生しなければ、認証成功とみなす
             c = Connection(server,
@@ -14,19 +15,22 @@ class ADBackend(object):
                            authentication=NTLM,
                            auto_bind=True)
             user = get_user_model()
-            
             try:
-                c.search(settings.AD_SEARCH_BASE, '(&(objectclass=person)(sAMAccountName='+username+'))', attributes=['CN'])
+                c.search(settings.AD_SEARCH_BASE, '(&(objectclass=person)(sAMAccountName='+username+'))', attributes=['CN','title'])
                 first_name=c.entries[0].cn.value
+                user_position=c.entries[0].title.value
+                user1=user.objects.get(username=username)
+                user1.profile.user_position=user_position
+                user1.save()
             except:
-                first_name=''
-            #delete 
-            #user.objects.filter(username=username).delete()
+                pass
             result, created = user.objects.update_or_create(
                 username = username,
                 first_name=first_name,
                 password = password
             )
+            
+            print(user1.profile.user_position+'----<')
             c.unbind()
             return result
 
